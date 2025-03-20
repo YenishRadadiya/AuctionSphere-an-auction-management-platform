@@ -1,1 +1,0 @@
-# AuctionSphere---an-Auction-management-platform
