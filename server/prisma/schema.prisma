@@ -7,33 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role {
-  id          Int       @id @default(autoincrement())
-  // id          String    @id @db.VarChar(21)
-  name        String    @unique @db.VarChar(50)
-  description String?   @db.VarChar(200)
-  created_at  DateTime?
+enum RoleType {
+  USER
+  ORGANIZATION_ADMIN
+  ORGANIZATION_MANAGER
+  ORGANIZATION_EMPLOYEE
+  SYSTEM_ADMIN
+  SYSTEM_EMPLOYEE
+}
 
-  users       Users[]
-  permissions RolePermission[]
-  orgRoles    OrgMember[]
+enum PermissionType {
+  ALL
+  CRUD_AUCTION
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        RoleType         @unique
+  permissions PermissionType[]
+  description String?          @db.VarChar(200)
+  created_at  DateTime         @default(now())
+
+  // users       Users[]
+  // permissions RolePermission[]
+  // orgRoles    OrgMember[]
+  // RolePermission RolePermission[]
+  // Users          Users[]
+  // OrgMember      OrgMember[]
+  RolePermission RolePermission[]
+  Users          Users[]
+  OrgMember      OrgMember[]
 }
 
 model Permission {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
+  id          Int            @id @default(autoincrement())
+  name        PermissionType @unique
   description String?
-  resource    String
-  action      String
-  created_at  DateTime?
+  // resource    String
+  // action      String
+  created_at  DateTime       @default(now())
 
-  roles RolePermission[]
+  // roles RolePermission[]
+  RolePermission RolePermission[]
 }
 
 model RolePermission {
   role_id       Int
   permission_id Int
-  created_at    DateTime?
+  created_at    DateTime @default(now())
 
   role       Role       @relation(fields: [role_id], references: [id])
   permission Permission @relation(fields: [permission_id], references: [id])
@@ -42,14 +63,14 @@ model RolePermission {
 }
 
 model Users {
-  id         Int       @id @default(autoincrement())
-  username   String    @unique
-  email      String    @unique
-  password   String
-  role_id    Int
-  is_active  Boolean   @default(true)
-  created_at DateTime?
-  updated_at DateTime?
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
+  password   String   @db.VarChar()
+  role_id    Int      @default(1)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
 
   role             Role                     @relation(fields: [role_id], references: [id])
   profile          Profile?
@@ -64,7 +85,7 @@ model Users {
 }
 
 model Profile {
-  user_id       Int       @id
+  user_id       Int      @id
   first_name    String?
   last_name     String?
   contact_no    String?
@@ -75,7 +96,7 @@ model Profile {
   state_id      Int?
   country_id    Int?
   image_url     String?
-  updated_at    DateTime?
+  updated_at    DateTime @updatedAt()
 
   user    Users    @relation(fields: [user_id], references: [id])
   city    City?    @relation(fields: [city_id], references: [id])
@@ -112,39 +133,44 @@ model Country {
 }
 
 model Product {
-  id             Int       @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   seller_id      Int
   title          String
   description    String?
   main_image_url String?
   category_id    Int
   status         String
-  created_at     DateTime?
-  updated_at     DateTime?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt()
 
   seller   Users     @relation(fields: [seller_id], references: [id])
   category Category  @relation(fields: [category_id], references: [id])
   auctions Auction[]
 }
 
+enum AuctionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Auction {
-  id                    Int       @id @default(autoincrement())
+  id                    Int           @id @default(autoincrement())
   title                 String
   description           String?
   product_id            Int
   seller_id             Int
   approved_by           Int
-  base_price            Decimal   @db.Decimal(15, 2)
-  increment_percentage  Decimal   @db.Decimal(5, 2)
-  latest_price          Decimal?  @db.Decimal(15, 2)
-  status                String
-  publish_time          DateTime?
+  base_price            Decimal       @db.Decimal(15, 2)
+  increment_percentage  Decimal       @db.Decimal(5, 2)
+  latest_price          Decimal?      @db.Decimal(15, 2)
+  status                AuctionStatus
+  publish_time          DateTime
   start_time            DateTime
   end_time              DateTime
   extend_duration       Int?
   auto_extend_threshold Int?
-  created_at            DateTime?
-  updated_at            DateTime?
+  created_at            DateTime      @default(now())
 
   product  Product  @relation(fields: [product_id], references: [id])
   seller   Users    @relation("SellerAuctions", fields: [seller_id], references: [id])
@@ -158,32 +184,31 @@ model Bid {
   auction_id Int
   user_id    Int
   value      Decimal  @db.Decimal(15, 2)
-  created_at DateTime
-
-  auction Auction @relation(fields: [auction_id], references: [id])
-  user    Users   @relation(fields: [user_id], references: [id])
+  created_at DateTime @default(now())
+  auction    Auction  @relation(fields: [auction_id], references: [id])
+  user       Users    @relation(fields: [user_id], references: [id])
 }
 
 model Category {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
   parent_id  Int?
-  is_active  Boolean   @default(true)
-  created_at DateTime?
-  updated_at DateTime?
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
 
   products Product[]
 }
 
 model Organization {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
   website     String?
   logo_url    String?
   status      String
-  created_at  DateTime?
-  updated_at  DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
 
   members OrgMember[]
 }
@@ -218,25 +243,24 @@ model NotificationType {
   name        NotificationTypeEnum @unique
   description String?
   template    String
-  created_at  DateTime?
-  updated_at  DateTime?
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt()
 
   notifications Notification[]
   preferences   NotificationPreference[]
 }
 
 model Notification {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   user_id     Int
   type_id     Int
   title       String
   message     String
   entity_type String?
-  is_read     Boolean  @default(false)
-  created_at  DateTime
-
-  user Users            @relation(fields: [user_id], references: [id])
-  type NotificationType @relation(fields: [type_id], references: [id])
+  is_read     Boolean          @default(false)
+  created_at  DateTime         @default(now())
+  user        Users            @relation(fields: [user_id], references: [id])
+  type        NotificationType @relation(fields: [type_id], references: [id])
 }
 
 model NotificationPreference {
