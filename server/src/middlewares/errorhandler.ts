@@ -1,22 +1,50 @@
-import { Request, Response, NextFunction } from 'express';
+// src/middleware/error.middleware.ts
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-
-interface AppError extends Error {
-    statusCode?: number;
-    errorMessage?: string;
-    data?: string;
-
-}
+import { AppError } from '../utils/AppError';
 
 export const errorHandler = (
-    err: AppError,
+    err: Error,
     req: Request,
     res: Response,
     next: NextFunction
-) => {
-    const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+): void => {
+    // Check if error is an instance of our AppError
+    if (err instanceof AppError) {
+        res.status(err.statusCode).json({
+            status: 'error',
+            message: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
 
-    res.status(statusCode).json({
+    // Handle other specific error types
+    if (err.name === 'ValidationError') {
+        res.status(StatusCodes.BAD_REQUEST).json({
+            status: 'error',
+            message: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
+
+    if (err.name === 'JsonWebTokenError') {
+        res.status(StatusCodes.UNAUTHORIZED).json({
+            status: 'error',
+            message: 'Invalid token. Please log in again.',
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
+
+    if (err.name === 'TokenExpiredError') {
+        res.status(StatusCodes.UNAUTHORIZED).json({
+            status: 'error',
+            message: 'Your token has expired. Please log in again.',
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
+
+    // Default error response for unhandled errors
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: 'error',
         message: err.message || 'Internal Server Error',
         stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
