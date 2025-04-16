@@ -4,7 +4,6 @@ import asyncHandler from 'express-async-handler';
 import { PrismaClient } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import { RegisterInput, LoginInput } from '../validators/auth.validator';
 import { AppError } from '../utils/AppError';
 import * as argon2 from "argon2";

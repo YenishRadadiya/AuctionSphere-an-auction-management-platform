@@ -1,7 +1,13 @@
 // src/middleware/error.middleware.ts
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../utils/AppError';
+
+interface ErrorResponse {
+    status: string;
+    message: string;
+    stack?: string;
+}
 
 export const errorHandler = (
     err: Error,
@@ -9,44 +15,39 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ): void => {
-    // Check if error is an instance of our AppError
-    if (err instanceof AppError) {
-        res.status(err.statusCode).json({
-            status: 'error',
-            message: err.message,
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-        });
-    }
 
-    // Handle other specific error types
-    if (err.name === 'ValidationError') {
-        res.status(StatusCodes.BAD_REQUEST).json({
-            status: 'error',
-            message: err.message,
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-        });
-    }
+    let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    let message = 'Internal Server Error';
 
-    if (err.name === 'JsonWebTokenError') {
-        res.status(StatusCodes.UNAUTHORIZED).json({
-            status: 'error',
-            message: 'Invalid token. Please log in again.',
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-        });
-    }
 
-    if (err.name === 'TokenExpiredError') {
-        res.status(StatusCodes.UNAUTHORIZED).json({
-            status: 'error',
-            message: 'Your token has expired. Please log in again.',
-            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-        });
-    }
-
-    // Default error response for unhandled errors
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    const errorResponse: ErrorResponse = {
         status: 'error',
-        message: err.message || 'Internal Server Error',
-        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
+        message: err.message || message
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+        errorResponse.stack = err.stack;
+    }
+
+    if (err instanceof AppError) {
+        statusCode = err.statusCode;
+    }
+    else {
+        switch (err.name) {
+            case 'ValidationError':
+                statusCode = StatusCodes.BAD_REQUEST;
+                break;
+
+            case 'JsonWebTokenError':
+                statusCode = StatusCodes.UNAUTHORIZED;
+                errorResponse.message = 'Invalid token. Please log in again.';
+                break;
+
+            case 'TokenExpiredError':
+                statusCode = StatusCodes.UNAUTHORIZED;
+                errorResponse.message = 'Your token has expired. Please log in again.';
+                break;
+        }
+    }
+    res.status(statusCode).json(errorResponse);
 };
