@@ -63,14 +63,16 @@ model RolePermission {
 }
 
 model Users {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  email      String   @unique
-  password   String   @db.VarChar()
-  role_id    Int      @default(1)
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt()
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  email           String    @unique
+  password        String    @db.VarChar()
+  resetToken      String?
+  token_expiresIn DateTime?
+  role_id         Int       @default(5)
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt()
 
   role             Role                     @relation(fields: [role_id], references: [id])
   profile          Profile?
