@@ -1,16 +1,12 @@
+// src/routes/auth.routes.ts
 import { Router } from 'express';
-import { register, login, forgotPassword, resetPassword } from '../controllers/user-auth.controller';
-import { validateRequest } from '../middlewares/validaterequest';
-import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } from '../validators/auth.validator';
+import { AuthController } from '../controllers/user-auth.controller';
 
 const router = Router();
 
-router.post('/register', validateRequest(registerSchema), register);
-router.post('/login', validateRequest(loginSchema), login);
-router.post('/forgotpassword', validateRequest(forgotPasswordSchema), forgotPassword);
-router.post('/resetpassword', validateRequest(resetPasswordSchema), resetPassword)
-
-
-
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.post('/forgot-password', AuthController.forgotPassword);
+router.post('/reset-password', AuthController.resetPassword);
 
 export default router;

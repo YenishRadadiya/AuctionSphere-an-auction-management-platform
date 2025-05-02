@@ -67,6 +67,7 @@ model Users {
   username        String    @unique
   email           String    @unique
   password        String    @db.VarChar()
+  // auth_token      String?
   resetToken      String?
   token_expiresIn DateTime?
   role_id         Int       @default(5)
