@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 5000;
 export const prisma = new PrismaClient();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: [process.env.FRONTEND_URL || 'http://localhost:4200'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+}));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
