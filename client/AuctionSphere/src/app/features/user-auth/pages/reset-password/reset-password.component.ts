@@ -55,7 +55,7 @@ export class ResetPasswordComponent implements OnInit {
   handleInvalidToken(message: string): void {
     // Optionally navigate away after a delay
     setTimeout(() => {
-      this.router.navigate(['/user/login']);
+      this.router.navigate(['/login']);
     }, 5000);
   }
 
@@ -79,7 +79,7 @@ export class ResetPasswordComponent implements OnInit {
         this.isSubmitting = false;
         this.toast.showSuccess('Password reset successful');
         setTimeout(() => {
-          this.router.navigate(['/user/login']);
+          this.router.navigate(['/login']);
         }, 3000);
       },
       error: (error) => {

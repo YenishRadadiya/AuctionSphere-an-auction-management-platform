@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 // Handle 401 Unauthorized errors by redirecting to login
                 if (error.status === 401) {
                     localStorage.removeItem('auth_token');
-                    this.router.navigate(['/user/login']);
+                    this.router.navigate(['login']);
                 }
                 return throwError(() => error);
             })

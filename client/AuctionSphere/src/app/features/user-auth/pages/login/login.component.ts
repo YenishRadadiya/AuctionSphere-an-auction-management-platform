@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, input, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
     private toastService: ToastService // Inject ToastService
   ) { }
 
+
   ngOnInit(): void { }
 
   onSubmit() {
@@ -56,7 +57,7 @@ export class LoginComponent implements OnInit {
           // Success toast notification using ToastService
           this.toastService.showSuccess(res.message || 'Login successful!');
           // Redirect to dashboard or home page
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/']);
         },
         error: (err) => {
           this.isLoading = false;
@@ -64,8 +65,10 @@ export class LoginComponent implements OnInit {
           this.toastService.showError(err.error?.message || 'Login failed. Please try again.');
         }
       });
+
     } else {
       this.loginForm.markAllAsTouched();
     }
   }
+
 }

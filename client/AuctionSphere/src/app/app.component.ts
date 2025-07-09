@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { ToastService } from './shared/service/toast/toast.service';
 import { MessageService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-root',

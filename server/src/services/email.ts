@@ -22,11 +22,11 @@ export const sendEmail = async (userEmail: string, token: string) => {
         to: userEmail,
         subject: 'Forgot password token',
         text: `Click the link below to reset your password:
-http://localhost:4200/user/reset-password?token=${encodedData}
+http://localhost:4200/reset-password?token=${encodedData}
 
 This link will expire in 10 minutes.`,
         html: `<p>Click the link below to reset your password:</p>
-<a href="http://localhost:4200/user/reset-password?token=${encodedData}">Reset your password</a>
+<a href="http://localhost:4200/reset-password?token=${encodedData}">Reset your password</a>
 <p>This link will expire in 10 minutes.</p>`,
     });
 

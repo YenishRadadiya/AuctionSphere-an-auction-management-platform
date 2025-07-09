@@ -33,19 +33,10 @@
                         class="text-red-500 text-xs">Password is required.</small>
                 </div>
 
-                <!-- Remember Me & Forgot -->
-                <!-- <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="remember-me" class="h-4 w-4 text-amber-500 border-gray-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
-                    </div>
-                    <div class="text-sm">
-                        <a [routerLink]="['/user/forgot']" class="text-amber-600 hover:underline">Forgot password?</a>
-                    </div>
-                </div> -->
+
                 <!-- forgot Pasword -->
                 <div class="text-sm ml-auto  flex justify-end">
-                    <a [routerLink]="['/user/forgot']" class="text-amber-600 hover:underline">Forgot password?</a>
+                    <a [routerLink]="['/forgot']" class="text-amber-600 hover:underline">Forgot password?</a>
                 </div>
 
                 <!-- Submit Button -->
@@ -54,10 +45,9 @@
                     [ngStyle]="{ 'background-color': '#f59e0b' }">
                 </button>
             </form>
-
             <p class="text-center text-sm text-gray-600 mt-4">
                 Don't have an account?
-                <a [routerLink]="['/user/signup']" class="text-amber-600 hover:underline cursor-pointer">Sign up</a>
+                <a [routerLink]="['/register']" class="text-amber-600 h;over:underline cursor-pointer">Sign up</a>
             </p>
         </div>
     </div>
