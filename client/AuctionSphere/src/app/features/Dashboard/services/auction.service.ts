@@ -1,7 +1,7 @@
-// src/app/services/auction.service.ts
+// ✅ FIXED: Add map to the import list
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, map } from 'rxjs'; // ✅ map imported
 
 export interface Auction {
     id?: number;
@@ -25,8 +25,28 @@ export class AuctionService {
     constructor(private http: HttpClient) { }
 
     getAll(): Observable<Auction[]> {
-        return this.http.get<Auction[]>(this.apiUrl).pipe(catchError(this.handleError));
+        return this.http.get<{ auctions: Auction[] }>(this.apiUrl).pipe(
+            map((res) => res.auctions), // ✅ now map is known and `res` is typed
+            catchError(this.handleError)
+        );
     }
+
+    // auction.service.ts
+
+    getUserAuctions(): Observable<Auction[]> {
+        return this.http.get<{ auctions: Auction[] }>(`${this.apiUrl}/user`).pipe(
+            map(res => res.auctions),
+            catchError(this.handleError)
+        );
+    }
+
+    getActiveAuctions(): Observable<Auction[]> {
+        return this.http.get<{ auctions: Auction[] }>(`${this.apiUrl}/active`).pipe(
+            map(res => res.auctions),
+            catchError(this.handleError)
+        );
+    }
+
 
     getById(id: number): Observable<Auction> {
         return this.http.get<Auction>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));

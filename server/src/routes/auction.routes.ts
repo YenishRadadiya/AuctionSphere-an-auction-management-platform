@@ -1,13 +1,19 @@
+// src/routes/auction.routes.ts
 import { Router } from 'express';
 import { AuctionController } from '../controllers/auction.controller';
-import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.post('/', authenticate, AuctionController.createAuction);
-router.get('/', authenticate, AuctionController.getAuctions);
-router.get('/:id', authenticate, AuctionController.getAuctionById);
-router.put('/:id', authenticate, AuctionController.updateAuction);
-router.delete('/:id', authenticate, AuctionController.deleteAuction);
+// ❌ REMOVE authenticate from here (already applied in main index)
+router.post('/', AuctionController.createAuction);
+router.get('/', AuctionController.getAuctions);
+// auction.routes.ts
+
+router.get('/user', AuctionController.getAuctionsByUser);
+router.get('/active', AuctionController.getActiveAuctions);
+
+router.get('/:id', AuctionController.getAuctionById);
+router.put('/:id', AuctionController.updateAuction);
+router.delete('/:id', AuctionController.deleteAuction);
 
 export default router;

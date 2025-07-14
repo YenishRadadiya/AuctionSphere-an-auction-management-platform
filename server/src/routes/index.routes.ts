@@ -8,7 +8,8 @@ const router = Router();
 // Mount routes
 router.use('/auth', authRoutes);
 router.use('/product', authenticate, productRoutes);
-router.use('/auction', authenticate, auctionRoutes);
+router.use('/auction', authenticate, auctionRoutes); // ✅ good
+
 
 
 

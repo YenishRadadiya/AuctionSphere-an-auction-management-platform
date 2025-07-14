@@ -15,7 +15,10 @@ export class AuctionController {
         }
 
         const data = validation.data;
-        const seller_id = req.user?.userId;
+        const seller_id = req.user?.id;
+
+        console.log('🔐 req.user in auction:', req.user);
+
 
         if (!seller_id) {
             res.status(401).json({ message: 'Unauthorized: Missing user ID' });
@@ -29,7 +32,7 @@ export class AuctionController {
                 start_time: new Date(data.start_time),
                 end_time: new Date(data.end_time),
                 seller_id,
-                status: AuctionStatus.PENDING,
+                status: AuctionStatus.APPROVED,
                 approved_by: null // Optional now
             }
         });
@@ -50,6 +53,24 @@ export class AuctionController {
             }
         });
 
+        res.status(200).json({ auctions });
+    });
+    static getAuctionsByUser = expressAsyncHandler(async (req: Request, res: Response) => {
+        const userId = req.user?.id;
+        const auctions = await prisma.auction.findMany({
+            where: { seller_id: userId },
+            orderBy: { created_at: 'desc' },
+            include: { product: true }
+        });
+        res.status(200).json({ auctions });
+    });
+
+    static getActiveAuctions = expressAsyncHandler(async (_req: Request, res: Response) => {
+        const auctions = await prisma.auction.findMany({
+            where: { status: AuctionStatus.APPROVED },
+            orderBy: { created_at: 'desc' },
+            include: { product: true }
+        });
         res.status(200).json({ auctions });
     });
 
