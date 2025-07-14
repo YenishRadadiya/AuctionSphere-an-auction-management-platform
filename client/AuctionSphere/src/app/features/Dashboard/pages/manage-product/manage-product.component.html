@@ -1,0 +1,227 @@
+<!-- <p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()"
+            [disabled]="!selectedProducts || !selectedProducts.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" (click)="exportCSV()" />
+    </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="products" [rows]="10" [paginator]="true"
+    [globalFilterFields]="['title', 'category', 'subCategory']" [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0 text-2xl font-extrabold">Manage Products</h5>
+            <span class="p-input-icon-left">
+                
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search...">
+            </span>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th pSortableColumn="title" style="min-width:16rem">
+                Title
+                <p-sortIcon field="title" />
+            </th>
+            <th>Image</th>
+            <th pSortableColumn="category" style="min-width:10rem">
+                Category
+                <p-sortIcon field="category" />
+            </th>
+            <th pSortableColumn="subCategory" style="min-width:10rem">
+                Sub-Category
+                <p-sortIcon field="subCategory" />
+            </th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-product>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="product.id" />
+            </td>
+            <td style="min-width: 16rem">{{ product.title }}</td>
+            <td>
+                <img *ngIf="product.image" [src]="product.image" [alt]="product.title"
+                    style="width: 64px; height: 64px;" class="rounded shadow-sm object-cover"
+                    onerror="this.src='https://via.placeholder.com/64?text=No+Image'; this.onerror=null;" />
+                <span *ngIf="!product.image">No Image</span>
+            </td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.subCategory }}</td>
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
+                    (click)="editProduct(product)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    (click)="deleteProduct(product)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Product Details" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <img [src]="product.image" [alt]="product.title" class="block m-auto pb-4" *ngIf="product.image" />
+            <div>
+                <label for="title" class="block font-bold mb-3">Title</label>
+                <input type="text" pInputText id="title" [(ngModel)]="product.title" required autofocus
+                    class="w-full" />
+                <small class="text-red-500" *ngIf="submitted && !product.title">Title is required.</small>
+            </div>
+            <div>
+                <label for="description" class="block font-bold mb-3">Description</label>
+                <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3"
+                    class="w-full"></textarea>
+            </div>
+            <div>
+                <label for="image" class="block font-bold mb-3">Image URL</label>
+                <input type="text" pInputText id="image" [(ngModel)]="product.image" class="w-full" />
+            </div>
+            <div>
+                <label for="category" class="block font-bold mb-3">Category</label>
+                <p-dropdown [(ngModel)]="product.category" inputId="category" [options]="categories" optionLabel="label"
+                    optionValue="name" placeholder="Select a Category" styleClass="w-full" />
+            </div>
+            <div>
+                <label for="subCategory" class="block font-bold mb-3">Sub-Category</label>
+                <p-dropdown [(ngModel)]="product.subCategory" inputId="subCategory" [options]="subCategories"
+                    optionLabel="label" optionValue="name" placeholder="Select a Sub-Category" styleClass="w-full" />
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Save" icon="pi pi-check" (click)="saveProduct()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" /> -->
+
+
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button label="Delete" icon="pi pi-trash" severity="danger" outlined (onClick)="deleteSelectedProducts()"
+            [disabled]="!selectedProducts || !selectedProducts.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" (click)="downloadCSV()" />
+    </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="products" [paginator]="true" [rows]="10" [globalFilterFields]="['title', 'category.name']"
+    [rowHover]="true" [(selection)]="selectedProducts" dataKey="id" [rowsPerPageOptions]="[10, 20, 30]"
+    [tableStyle]="{ 'min-width': '75rem' }" [exportFunction]="customExport"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" [showCurrentPageReport]="true">
+
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="text-xl font-semibold">Manage Products</h5>
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </span>
+        </div>
+    </ng-template>
+
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th pSortableColumn="title">Title <p-sortIcon field="title" /></th>
+            <th>Image</th>
+            <th pSortableColumn="category.name">Category <p-sortIcon field="category.name" /></th>
+            <th>Status</th>
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+
+    <ng-template #body let-product>
+        <tr>
+            <td>
+                <p-tableCheckbox [value]="product" />
+            </td>
+            <td>{{ product.title }}</td>
+            <td>
+                <img [src]="product.main_image_url" alt="image" class="w-16 h-16 object-cover rounded shadow"
+                    onerror="this.src='https://via.placeholder.com/64?text=No+Image'; this.onerror=null;" />
+            </td>
+            <td>{{ product.category?.name }}</td>
+            <td>{{ product.status }}</td>
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
+                    (click)="editProduct(product)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    (click)="deleteProduct(product)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<!-- Dialog for Add/Edit -->
+<p-dialog [(visible)]="productDialog" [style]="{ width: '500px' }" header="Product Details" [modal]="true"
+    [closable]="false">
+
+    <form [formGroup]="productForm" class="space-y-5">
+        <div>
+            <label for="title" class="block text-sm font-semibold">Title</label>
+            <input id="title" type="text" pInputText formControlName="title" class="w-full" />
+        </div>
+
+        <div>
+            <label for="description" class="block text-sm font-semibold">Description</label>
+            <textarea id="description" pInputTextarea formControlName="description" rows="3" class="w-full"></textarea>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold">Main Category</label>
+            <p-dropdown [options]="mainCategories" formControlName="main_category_id" optionLabel="name"
+                optionValue="id" placeholder="Select Main Category" class="w-full" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold">Sub Category</label>
+            <p-dropdown [options]="subCategories" formControlName="sub_category_id" optionLabel="name" optionValue="id"
+                placeholder="Select Sub Category" class="w-full" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold">Status</label>
+            <p-dropdown formControlName="status" [options]="[
+                      { label: 'Draft', value: 'draft' },
+                      { label: 'Active', value: 'active' },
+                      { label: 'Inactive', value: 'inactive' }
+                    ]" placeholder="Select Status" class="w-full" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold">Image</label>
+            <input type="file" accept="image/*" (change)="onFileChange($event)" class="block" />
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="preview"
+                class="mt-3 w-32 h-32 object-cover rounded shadow" />
+        </div>
+    </form>
+
+    <ng-template #footer>
+        <div class="flex justify-end gap-3">
+            <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+            <p-button label="Save" icon="pi pi-check" (click)="saveProduct()" />
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />

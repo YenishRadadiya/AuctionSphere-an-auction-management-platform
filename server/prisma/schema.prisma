@@ -1,0 +1,293 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleType {
+  USER
+  ORGANIZATION_ADMIN
+  ORGANIZATION_MANAGER
+  ORGANIZATION_EMPLOYEE
+  SYSTEM_ADMIN
+  SYSTEM_EMPLOYEE
+}
+
+enum PermissionType {
+  ALL
+  CRUD_AUCTION
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        RoleType         @unique
+  permissions PermissionType[]
+  description String?          @db.VarChar(200)
+  created_at  DateTime         @default(now())
+
+  // users       Users[]
+  // permissions RolePermission[]
+  // orgRoles    OrgMember[]
+  // RolePermission RolePermission[]
+  // Users          Users[]
+  // OrgMember      OrgMember[]
+  RolePermission RolePermission[]
+  Users          Users[]
+  OrgMember      OrgMember[]
+}
+
+model Permission {
+  id          Int            @id @default(autoincrement())
+  name        PermissionType @unique
+  description String?
+  // resource    String
+  // action      String
+  created_at  DateTime       @default(now())
+
+  // roles RolePermission[]
+  RolePermission RolePermission[]
+}
+
+model RolePermission {
+  role_id       Int
+  permission_id Int
+  created_at    DateTime @default(now())
+
+  role       Role       @relation(fields: [role_id], references: [id])
+  permission Permission @relation(fields: [permission_id], references: [id])
+
+  @@id([role_id, permission_id])
+}
+
+model Users {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  email           String    @unique
+  password        String    @db.VarChar()
+  // auth_token      String?
+  resetToken      String?
+  token_expiresIn DateTime?
+  role_id         Int       @default(5)
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt()
+
+  role             Role                     @relation(fields: [role_id], references: [id])
+  profile          Profile?
+  products         Product[]
+  auctions         Auction[]                @relation("SellerAuctions")
+  approvedAuctions Auction[]                @relation("ApprovedAuctions")
+  bids             Bid[]
+  orgMembers       OrgMember[]
+  reports          Report[]
+  notifications    Notification[]
+  preferences      NotificationPreference[]
+}
+
+model Profile {
+  user_id       Int      @id
+  first_name    String?
+  last_name     String?
+  contact_no    String?
+  landmark      String?
+  address_line1 String?
+  address_line2 String?
+  city_id       Int?
+  state_id      Int?
+  country_id    Int?
+  image_url     String?
+  updated_at    DateTime @updatedAt()
+
+  user    Users    @relation(fields: [user_id], references: [id])
+  city    City?    @relation(fields: [city_id], references: [id])
+  state   State?   @relation(fields: [state_id], references: [id])
+  country Country? @relation(fields: [country_id], references: [id])
+}
+
+model City {
+  id       Int    @id @default(autoincrement())
+  name     String
+  state_id Int
+
+  state    State     @relation(fields: [state_id], references: [id])
+  profiles Profile[]
+}
+
+model State {
+  id         Int    @id @default(autoincrement())
+  name       String
+  country_id Int
+
+  country  Country   @relation(fields: [country_id], references: [id])
+  cities   City[]
+  profiles Profile[]
+}
+
+model Country {
+  id   Int    @id @default(autoincrement())
+  name String
+  code String
+
+  states   State[]
+  profiles Profile[]
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  seller_id      Int
+  title          String
+  description    String?
+  main_image_url String?
+  category_id    Int
+  status         String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt()
+
+  seller   Users     @relation(fields: [seller_id], references: [id])
+  category Category  @relation(fields: [category_id], references: [id])
+  auctions Auction[]
+}
+
+enum AuctionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Auction {
+  id                    Int           @id @default(autoincrement())
+  title                 String
+  description           String?
+  product_id            Int
+  seller_id             Int
+  approved_by           Int? // Optional for now
+  base_price            Decimal       @db.Decimal(15, 2)
+  increment_percentage  Decimal       @db.Decimal(5, 2)
+  latest_price          Decimal?      @db.Decimal(15, 2)
+  status                AuctionStatus
+  publish_time          DateTime
+  start_time            DateTime
+  end_time              DateTime
+  extend_duration       Int?
+  auto_extend_threshold Int?
+  created_at            DateTime      @default(now())
+
+  product  Product  @relation(fields: [product_id], references: [id])
+  seller   Users    @relation("SellerAuctions", fields: [seller_id], references: [id])
+  approver Users?   @relation("ApprovedAuctions", fields: [approved_by], references: [id])
+  bids     Bid[]
+  reports  Report[]
+}
+
+model Bid {
+  id         Int      @id @default(autoincrement())
+  auction_id Int
+  user_id    Int
+  value      Decimal  @db.Decimal(15, 2)
+  created_at DateTime @default(now())
+  auction    Auction  @relation(fields: [auction_id], references: [id])
+  user       Users    @relation(fields: [user_id], references: [id])
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  parent_id  Int?
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+
+  products Product[]
+}
+
+model Organization {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  website     String?
+  logo_url    String?
+  status      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+
+  members OrgMember[]
+}
+
+model OrgMember {
+  user_id   Int
+  org_id    Int
+  role_id   Int
+  joined_at DateTime
+  status    String
+
+  user Users        @relation(fields: [user_id], references: [id])
+  org  Organization @relation(fields: [org_id], references: [id])
+  role Role         @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, org_id])
+}
+
+model Report {
+  id         Int          @id @default(autoincrement())
+  user_id    Int
+  auction_id Int
+  reason     String?
+  status     ReportStatus
+
+  user    Users   @relation(fields: [user_id], references: [id])
+  auction Auction @relation(fields: [auction_id], references: [id])
+}
+
+model NotificationType {
+  id          Int                  @id @default(autoincrement())
+  name        NotificationTypeEnum @unique
+  description String?
+  template    String
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt()
+
+  notifications Notification[]
+  preferences   NotificationPreference[]
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  user_id     Int
+  type_id     Int
+  title       String
+  message     String
+  entity_type String?
+  is_read     Boolean          @default(false)
+  created_at  DateTime         @default(now())
+  user        Users            @relation(fields: [user_id], references: [id])
+  type        NotificationType @relation(fields: [type_id], references: [id])
+}
+
+model NotificationPreference {
+  user_id              Int
+  notification_type_id Int
+  enabled              Boolean @default(true)
+
+  user Users            @relation(fields: [user_id], references: [id])
+  type NotificationType @relation(fields: [notification_type_id], references: [id])
+
+  @@id([user_id, notification_type_id])
+}
+
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationTypeEnum {
+  newbid
+  outbid
+  auction_start
+  auction_won
+  auction_approved
+}
