@@ -1,0 +1,73 @@
+<header class="sticky top-0 z-50 flex w-full h-20 bg-amber-50 border-b border-amber-300 shadow-sm rounded-b-xl">
+    <div class="flex w-full items-center justify-between px-4 py-3 lg:px-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-4">
+            <img src="assets/images/logo.png" alt="Logo" class="h-36 w-auto" />
+        </div>
+
+        <!-- Search Box (hidden on mobile) -->
+        <!-- <div class="hidden lg:block w-full max-w-md">
+            <div class="relative">
+                <i class="pi pi-search absolute top-1/2 left-3 -translate-y-1/2 text-amber-500"></i>
+                <input type="text" placeholder="Search ..."
+                    class="w-full pl-10 pr-12 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+            </div>
+        </div> -->
+
+        <!-- Actions: Notification & Profile -->
+        <div class="flex items-center gap-4">
+            <!-- Notification Dropdown -->
+            <div class="relative notification-root">
+                <button (click)="toggleNotificationDropdown()"
+                    class="relative h-10 w-10 flex items-center justify-center rounded-full bg-white hover:bg-amber-100 shadow-sm">
+                    <i class="pi pi-bell text-amber-600 text-lg"></i>
+                    <span *ngIf="hasNotification"
+                        class="absolute top-1 right-1 h-2 w-2 bg-orange-500 rounded-full animate-ping"></span>
+                </button>
+
+                <div *ngIf="notificationDropdownOpen"
+                    class="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 overflow-hidden">
+                    <ul class="divide-y divide-gray-100 max-h-96 overflow-auto">
+                        <li>
+                            <a class="flex gap-3 p-3 hover:bg-gray-100" href="#">
+                                <span class="relative z-1 block h-10 w-10 rounded-full">
+                                    <img src="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+                                        alt="User" class="rounded-full object-cover w-full h-full" />
+                                    <span
+                                        class="bg-green-500 absolute right-0 bottom-0 z-10 h-2.5 w-2.5 rounded-full border-2 border-white"></span>
+                                </span>
+
+                                <span class="block w-full">
+                                    <span class="text-sm text-gray-700">
+                                        <span class="font-medium">Alena Franci</span> requests permission to change
+                                        <span class="font-medium">Project - Nganter App</span>
+                                    </span>
+                                    <span class="text-xs text-gray-500 flex gap-2 mt-1">
+                                        <span>Project</span>
+                                        <span class="h-1 w-1 rounded-full bg-gray-400"></span>
+                                        <span>8 min ago</span>
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="relative profile-root">
+                <button (click)="toggleProfileDropdown()"
+                    class="h-10 w-10 rounded-full overflow-hidden border border-gray-300">
+                    <img src="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png" alt="User Avatar"
+                        class="h-full w-full object-cover" />
+                </button>
+
+                <div *ngIf="profileDropdownOpen"
+                    class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transition-all duration-200">
+                    <a routerLink="/profile" class="block px-4 py-2 text-sm hover:bg-amber-100 transition">Profile</a>
+                    <a class="block px-4 py-2 text-sm hover:bg-amber-100 transition" (click)="handleLogout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

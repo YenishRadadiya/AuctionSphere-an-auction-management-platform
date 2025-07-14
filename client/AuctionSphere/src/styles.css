@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @plugin "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
+/* Sidebar hidden by default on mobile */
+@media (max-width: 1024px) {
+  aside {
+    display: none;
+  }
+
+  aside.show {
+    display: block;
+  }
+}

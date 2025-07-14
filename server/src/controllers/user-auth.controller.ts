@@ -37,7 +37,6 @@ export class AuthController {
         await prisma.users.create({
             data: { username, email, password: hashedPassword },
         });
-
         res.status(StatusCodes.CREATED).json({
             status: 'success',
             message: 'Registration successful',

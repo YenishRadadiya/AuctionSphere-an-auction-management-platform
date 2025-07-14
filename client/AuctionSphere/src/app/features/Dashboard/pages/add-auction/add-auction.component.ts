@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-add-auction',
+  imports: [],
+  templateUrl: './add-auction.component.html',
+  styleUrl: './add-auction.component.css'
+})
+export class AddAuctionComponent {
+
+}
