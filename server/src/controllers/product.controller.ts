@@ -102,7 +102,13 @@ export class ProductController {
         }
 
         const { title, description, category_id } = parsed.data;
-        const seller_id = 34; // Replace with auth-based seller_id
+        // const seller_id = req.user?.id; // Replace with auth-based seller_id
+        const seller_id = req.user?.id;
+        if (!seller_id) {
+            res.status(401).json({ message: 'Unauthorized: Seller ID missing' });
+            return;
+        }
+
 
         if (!req.file?.path) {
             res.status(400).json({ message: 'Product image is required.' });
@@ -131,6 +137,8 @@ export class ProductController {
 
         res.status(201).json({ message: 'Product created successfully', product: newProduct });
     });
+
+
 
     // GET PRODUCTS
     static getProducts = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {

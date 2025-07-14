@@ -1,1 +1,75 @@
-<p>add-auction works!</p>
+<div class="p-6">
+    <h2 class="text-2xl font-bold mb-6 text-amber-600">Create Auction</h2>
+    <form [formGroup]="auctionForm" (ngSubmit)="submit()" class="grid gap-6">
+
+        <div>
+            <label class="block font-semibold mb-2">Title</label>
+            <input type="text" pInputText formControlName="title" class="w-full" />
+        </div>
+
+        <div>
+            <label class="block font-semibold mb-2">Description</label>
+            <textarea pInputTextarea formControlName="description" class="w-full" rows="4"></textarea>
+        </div>
+
+        <div>
+            <label class="block font-semibold mb-2">Product</label>
+            <p-dropdown [options]="products" formControlName="product_id" optionLabel="title" optionValue="id"
+                placeholder="Select Product" class="w-full" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold mb-2">Base Price</label>
+                <input type="number" pInputText formControlName="base_price" class="w-full" />
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-2">Increment %</label>
+                <input type="number" pInputText formControlName="increment_percentage" class="w-full" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+            <div>
+                <label class="block font-semibold mb-2">Publish Time</label>
+                <input type="datetime-local" pInputText formControlName="publish_time" class="w-full" />
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-2">Start Time</label>
+                <input type="datetime-local" pInputText formControlName="start_time" class="w-full" />
+            </div>
+
+            <div>
+                <label class="block font-semibold mb-2">End Time</label>
+                <input type="datetime-local" pInputText formControlName="end_time" class="w-full" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold mb-2">Extend Duration (mins)</label>
+                <input type="number" pInputText formControlName="extend_duration" class="w-full" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-2">Auto Extend Threshold (mins)</label>
+                <input type="number" pInputText formControlName="auto_extend_threshold" class="w-full" />
+            </div>
+        </div>
+
+        <div>
+            <label class="block font-semibold mb-2">Status</label>
+            <p-dropdown [options]="[
+          { label: 'Draft', value: 'draft' },
+          { label: 'Active', value: 'active' },
+          { label: 'Completed', value: 'completed' },
+          { label: 'Cancelled', value: 'cancelled' }
+        ]" formControlName="status" placeholder="Select Status" class="w-full" />
+        </div>
+
+        <div class="pt-4">
+            <p-button label="Submit" type="submit" [disabled]="auctionForm.invalid" />
+        </div>
+    </form>
+</div>
