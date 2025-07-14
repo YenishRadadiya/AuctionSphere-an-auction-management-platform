@@ -41,7 +41,8 @@ export const routes: Routes = [
         {
             path: 'auction', children: [
                 { path: 'create', component: AddAuctionComponent },
-                { path: 'all', component: AuctionListComponent }
+                { path: 'all', component: AuctionListComponent, data: { type: 'user' } }, // now shows MY auctions
+                { path: 'my', component: AuctionListComponent, data: { type: 'active' } } // now shows ALL active
             ]
         }]
     },

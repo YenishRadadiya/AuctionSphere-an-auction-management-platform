@@ -163,7 +163,7 @@ model Auction {
   description           String?
   product_id            Int
   seller_id             Int
-  approved_by           Int
+  approved_by           Int? // Optional for now
   base_price            Decimal       @db.Decimal(15, 2)
   increment_percentage  Decimal       @db.Decimal(5, 2)
   latest_price          Decimal?      @db.Decimal(15, 2)
@@ -177,7 +177,7 @@ model Auction {
 
   product  Product  @relation(fields: [product_id], references: [id])
   seller   Users    @relation("SellerAuctions", fields: [seller_id], references: [id])
-  approver Users    @relation("ApprovedAuctions", fields: [approved_by], references: [id])
+  approver Users?   @relation("ApprovedAuctions", fields: [approved_by], references: [id])
   bids     Bid[]
   reports  Report[]
 }

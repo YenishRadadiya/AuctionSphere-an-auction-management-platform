@@ -1,1 +1,47 @@
-<p>auction-list works!</p>
+<p-toolbar class="mb-6">
+    <ng-template #start>
+        <h3 class="text-lg font-semibold">Auction Listings</h3>
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" (click)="exportCSV()" />
+    </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="auctions" [paginator]="true" [rows]="10"
+    [globalFilterFields]="['title', 'status', 'product.title']" [tableStyle]="{ 'min-width': '75rem' }"
+    [rowsPerPageOptions]="[10, 20, 30]" [rowHover]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} auctions" [showCurrentPageReport]="true">
+
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="text-xl font-semibold">Manage Auctions</h5>
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </span>
+        </div>
+    </ng-template>
+
+    <ng-template #header>
+        <tr>
+            <th pSortableColumn="title">Title <p-sortIcon field="title" /></th>
+            <th>Status</th>
+            <th>Product</th>
+            <th>Seller</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+    </ng-template>
+
+    <ng-template #body let-auction>
+        <tr>
+            <td>{{ auction.title }}</td>
+            <td>{{ auction.status }}</td>
+            <td>{{ auction.product?.title }}</td>
+            <td>{{ auction.seller?.username }}</td>
+            <td>{{ auction.start_time | date: 'short' }}</td>
+            <td>{{ auction.end_time | date: 'short' }}</td>
+        </tr>
+    </ng-template>
+</p-table>
